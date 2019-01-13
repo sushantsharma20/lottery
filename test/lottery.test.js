@@ -35,7 +35,7 @@ describe('Lottery contract test',()=>{
     it('1 Player can enter',async ()=>{
         await lotteryContract.methods.enter().send({
             from: accounts[0],
-            vaue: web3.utils.toWei('0.02','ether')
+            value: web3.utils.toWei('0.02','ether')
         });
         const players = await lotteryContract.methods.getPlayers().call();   
 
@@ -56,7 +56,29 @@ describe('Lottery contract test',()=>{
         assert.equal(accounts[1],players[0]);
         assert.equal(accounts[2],players[1]);
     })
-    
+    it('Requires minimum ether 0.2',async ()=>{
+      try{
+        await lotteryContract.methods.enter().send({
+            from:accounts[1],
+            value: 10
+        })
+            assert(false);
+        }catch(err){
+            assert(err);
+        }
+
+    })
+    it('Only manager allowed to PickWinner', async ()=>{
+        try{
+            await lotteryContract.methods.pickWinner().call({
+            from: accounts[1]
+            })
+            assert(false)
+        }catch(err){
+            assert(err)
+        }
+
+    })
 
 })
 
